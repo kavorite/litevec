@@ -18,10 +18,10 @@ import (
 )
 
 type Text []string
-type Mapping map[string]mat.Vector
+type VecMapping map[string]mat.Vector
 
 type Model struct {
-	Mapping
+	VecMapping
 	Rows mat.RowViewer
 	mat.Matrix
 }
@@ -130,29 +130,49 @@ func (D Doc) WordVecs(maxJuxt int, maxDim *int) (rtn Model) {
 	rtn.Rows = mat
 	V := D.Vocab()
 	for i := 0; i < len(V); i++ {
-		rtn.Mapping[V[i]] = rtn.Rows.RowView(i)
+		rtn.VecMapping[V[i]] = rtn.Rows.RowView(i)
 	}
 	return
 }
 
-func (m Mapping) Similarity(a, b string) float64 {
+func (m VecMapping) CosSim(a, b string) float64 {
 	return mat.Dot(m[a], m[b])
 }
 
-func (m Mapping) Vocab() (rtn Text) {
+func (m VecMapping) Vocab() (rtn Text) {
 	for k, _ := range m {
 		rtn = append(rtn, k)
 	}
 	return
 }
 
-func (m Mapping) Constellation(t string, n *int) Text {
+func (m VecMapping) Constellation(t string, n *int) Text {
 	if n != nil {
 		*n %= len(m)
 	}
 	V := m.Vocab()
 	sort.Slice(V, func(i, j int) bool {
-		return m.Similarity(t, V[i]) < m.Similarity(t, V[j])
+		return m.CosSim(t, V[i]) < m.CosSim(t, V[j])
 	})
 	return V[:*n]
+}
+
+type Adjacency map[string]float64
+
+func (A Adjacency) Of(p, q VecMapping) {
+	s := int(math.Max(float64(len(p)), float64(len(q))))
+	A = make(Adjacency, s)
+	for k, a := range p {
+		if b, ok := p[k]; ok {
+			A[k] = mat.Dot(a, b)
+		}
+	}
+}
+
+func (A Adjacency) DocSim() float64 {
+	var sigma float64
+	for _, x := range A {
+		sigma += x
+	}
+	return sigma / float64(len(A))
 }
