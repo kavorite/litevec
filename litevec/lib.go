@@ -219,13 +219,17 @@ func (A Adjacency) Between(M ...VecMapping) {
 		for k := range V {
 			A[k] = 0
 			Qs := append(M[p:], M[:p+1]...)
-			for _, Q := range Qs {
+			for q, Q := range Qs {
+				var sigma float64
 				for t := range V {
 					// norm over the corporas' semantic similarity of k and t
 					c := mat.Dot(P[k], Q[k])
 					d := mat.Dot(P[t], Q[t])
-					A[k] += c / d / float64(len(V))
+					sigma += c / d
 				}
+				n := float64(q)
+				sigma /= float64(len(V))
+				A[k] = (A[k]*n + sigma) / n
 			}
 		}
 	}
