@@ -162,6 +162,7 @@ func (I Incidency) Of(D Doc, maxJuxt int) {
 	}
 	for t, v := range I {
 		// P(Q | T) = P(T | Q)^-1
+		I[t] /= float64(len(I))
 		I[t] = 1 / v
 	}
 }
