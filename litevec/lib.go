@@ -160,7 +160,10 @@ func (I Incidency) Of(D Doc, maxJuxt int) {
 		S.DoRowNonZero(i, func(i, j int, v float64) {
 			sigma += v
 		})
-		I[t] = 1 / sigma
+		I[t] += sigma
+	}
+	for t, v := range I {
+		I[t] = 1 / v
 	}
 }
 
