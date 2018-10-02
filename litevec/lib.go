@@ -167,6 +167,16 @@ func (I Incidency) Of(D Doc, maxJuxt int) {
 	}
 }
 
+func (I Incidency) Ranking() (rtn Text) {
+	for t := range I {
+		rtn = append(rtn, t)
+	}
+	sort.Slice(rtn, func(i, j int) bool {
+		return I[rtn[i]] < I[rtn[j]]
+	})
+	return
+}
+
 func (m VecMapping) Constellation(t string, n *int) Text {
 	if n != nil {
 		*n %= len(m)
