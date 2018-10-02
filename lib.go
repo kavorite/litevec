@@ -154,6 +154,10 @@ func (m VecMapping) Embedding(src Text) (rtn *mat.VecDense) {
 	return
 }
 
+func (m VecMapping) StrEmbedding(src string) *mat.VecDense {
+	return m.Embedding(MkText(src))
+}
+
 /// Incidency can be thought of as the importance of a specific term to a given text:
 /// Measuring the diversity of the contexts in which each term co-occurs yields a measurement of
 /// how important it is to the document overall.
