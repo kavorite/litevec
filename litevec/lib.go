@@ -110,7 +110,8 @@ func (D Doc) SkipgramPs(maxJuxt int) *sparse.CSR {
 	return rtn
 }
 
-/// Returns a normalized pointwise mutual information matrix.
+/// Returns a normalized pointwise mutual information matrix by normalizing
+/// the co-occurrence probability of each term with each other
 func (D Doc) PMIs(maxJuxt int) (N *sparse.CSR) {
 	U := D.UnigramPs()
 	N = D.SkipgramPs(maxJuxt)
@@ -144,6 +145,23 @@ func (m VecMapping) Vocab() (rtn Text) {
 		rtn = append(rtn, k)
 	}
 	return
+}
+
+/// Incidency can be thought of as the importance of a specific term to a given text:
+/// Measuring the diversity of the contexts in which each term co-occurs yields a measurement of
+/// how important it is to the document overall.
+type Incidency map[string]float64
+
+func (I Incidency) Of(D Doc, maxJuxt int) {
+	I = make(Incidency, D.VocabLength())
+	S := D.PMIs(maxJuxt)
+	for t, i := range D.TokenIndices {
+		var sigma float64
+		S.DoRowNonZero(i, func(i, j int, v float64) {
+			sigma += v
+		})
+		I[t] = 1 / sigma
+	}
 }
 
 func (m VecMapping) Constellation(t string, n *int) Text {
