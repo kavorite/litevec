@@ -110,8 +110,8 @@ func (D Doc) SkipgramPs(maxJuxt int) *sparse.CSR {
 	return rtn
 }
 
-/// Returns a normalized pointwise mutual information matrix by normalizing
-/// the co-occurrence probability of each term with each other
+/// Returns a normalized pointwise mutual information matrix over the
+/// co-occurrence probability of each term with each other
 func (D Doc) PMIs(maxJuxt int) (N *sparse.CSR) {
 	U := D.UnigramPs()
 	N = D.SkipgramPs(maxJuxt)
