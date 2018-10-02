@@ -5,7 +5,7 @@ import (
 	"io"
 	"math"
 	"sort"
-	str "strings"
+	"strings"
 	"unicode"
 
 	"golang.org/x/text/runes"
@@ -43,7 +43,7 @@ func ReadText(raw io.Reader) (rtn Text, err error) {
 }
 
 func MkText(s string) (rtn Text) {
-	rtn, _ = ReadText(str.NewReader(s))
+	rtn, _ = ReadText(strings.NewReader(s))
 	return
 }
 
