@@ -169,7 +169,7 @@ func (A Adjacency) Of(P, Q VecMapping) {
 	}
 }
 
-func (A Adjacency) DocSim() float64 {
+func (A Adjacency) Sim() float64 {
 	var sigma float64
 	for _, x := range A {
 		sigma += x
