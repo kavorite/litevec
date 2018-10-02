@@ -218,7 +218,7 @@ func (A Adjacency) Between(M ...VecMapping) {
 	for p, P := range M {
 		for k := range V {
 			A[k] = 0
-			Qs := append(M[p:], M[:p+1]...)
+			Qs := append(M[:p], M[p+1:]...)
 			for q, Q := range Qs {
 				var sigma float64
 				for t := range V {
