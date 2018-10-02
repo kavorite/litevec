@@ -168,7 +168,6 @@ func (I Incidency) Of(D Doc, maxJuxt int) {
 }
 
 func (I Incidency) Keywords(n *int) (rtn Text) {
-	var k int
 	for t := range I {
 		rtn = append(rtn, t)
 	}
@@ -176,7 +175,7 @@ func (I Incidency) Keywords(n *int) (rtn Text) {
 		return I[rtn[i]] < I[rtn[j]]
 	})
 	if n != nil {
-		k = *n
+		k := *n
 		k %= len(I)
 		rtn = rtn[:k]
 	}
