@@ -22,8 +22,7 @@ type VecMapping map[string]mat.Vector
 
 type Model struct {
 	VecMapping
-	Rows mat.RowViewer
-	mat.Matrix
+	Matrix *mat.Dense
 }
 
 func ReadText(raw io.Reader) (rtn Text, err error) {
@@ -128,10 +127,9 @@ func (D Doc) WordVecs(maxJuxt int, maxDim *int) (rtn Model) {
 	svd.Factorize(sparse, mat.SVDFull)
 	mat := svd.UTo(nil)
 	rtn.Matrix = mat
-	rtn.Rows = mat
 	V := D.Vocab()
 	for i := 0; i < len(V); i++ {
-		rtn.VecMapping[V[i]] = rtn.Rows.RowView(i)
+		rtn.VecMapping[V[i]] = rtn.Matrix.RowView(i)
 	}
 	return
 }
