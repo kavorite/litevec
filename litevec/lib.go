@@ -195,17 +195,32 @@ func (m VecMapping) Constellation(t string, n *int) Text {
 
 type Adjacency map[string]float64
 
-func (A Adjacency) Of(P, Q VecMapping) {
-	s := int(math.Max(float64(len(P)), float64(len(Q))))
+func (A Adjacency) Between(V ...VecMapping) {
+	sf := float64(len(V[0]))
+	for _, v := range V {
+		sf = math.Max(float64(len(v)), sf)
+	}
+	s := int(sf)
 	A = make(Adjacency, s)
-	for k, a := range P {
-		if b, ok := Q[k]; ok {
-			A[k] = mat.Dot(a, b)
+	for i, P := range V {
+		for k := range P {
+			ok := true
+			Qs := append(V[i:], V[:i+1]...)
+			for q := 0; q < len(Qs) && ok; q++ {
+				_, ok = Qs[q][k]
+			}
+			if ok {
+				A[k] = 0
+				for _, Q := range Qs {
+					A[k] += mat.Dot(P[k], Q[k])
+				}
+				A[k] /= float64(len(V) - 1)
+			}
 		}
 	}
 }
 
-func (A Adjacency) Sim() float64 {
+func (A Adjacency) DocSim() float64 {
 	var sigma float64
 	for _, x := range A {
 		sigma += x
