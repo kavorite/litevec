@@ -105,7 +105,7 @@ func (D Doc) SkipgramPs(maxJuxt int) *sparse.CSR {
 		}
 	}
 	rtn.DoNonZero(func(i, j int, v float64) {
-		rtn.Set(i, j, rtn.At(i, j)/float64(len(D.Tokens)))
+		rtn.Set(i, j, v/float64(len(D.Tokens)))
 	})
 	return rtn
 }
@@ -117,7 +117,7 @@ func (D Doc) PMIs(maxJuxt int) (N *sparse.CSR) {
 	N = D.SkipgramPs(maxJuxt)
 	// normalize
 	N.DoNonZero(func(i, j int, v float64) {
-		N.Set(i, j, math.Log(N.At(i, j)/(U[i]*U[j])))
+		N.Set(i, j, math.Log(v/(U[i]*U[j])))
 	})
 	return
 }
