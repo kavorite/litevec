@@ -195,26 +195,37 @@ func (m VecMapping) Constellation(t string, n *int) Text {
 
 type Adjacency map[string]float64
 
-func (A Adjacency) Between(V ...VecMapping) {
-	sf := float64(len(V[0]))
-	for _, v := range V {
+func (A Adjacency) Between(M ...VecMapping) {
+	sf := float64(len(M[0]))
+	for _, v := range M {
 		sf = math.Max(float64(len(v)), sf)
 	}
 	s := int(sf)
 	A = make(Adjacency, s)
-	for i, P := range V {
+	V := make(map[string]struct{}, s)
+	for p, P := range M {
 		for k := range P {
 			ok := true
-			Qs := append(V[i:], V[:i+1]...)
+			Qs := append(M[p:], M[:p+1]...)
 			for q := 0; q < len(Qs) && ok; q++ {
 				_, ok = Qs[q][k]
 			}
 			if ok {
-				A[k] = 0
-				for _, Q := range Qs {
-					A[k] += mat.Dot(P[k], Q[k])
+				V[k] = struct{}{}
+			}
+		}
+	}
+	for p, P := range M {
+		for k := range V {
+			A[k] = 0
+			Qs := append(M[p:], M[:p+1]...)
+			for _, Q := range Qs {
+				for t := range V {
+					// norm over the corporas' semantic similarity of k and t
+					c := mat.Dot(P[k], Q[k])
+					d := mat.Dot(P[t], Q[t])
+					A[k] += c / d / float64(len(V))
 				}
-				A[k] /= float64(len(V) - 1)
 			}
 		}
 	}
